@@ -72,7 +72,6 @@ push cs
 call __textModeShow16
 add esp,6
 
-
 call __initVideo
 
 ;call __initDevices
@@ -365,8 +364,6 @@ push edi
 call __sectorReader
 add esp,10
 
-
-
 _readVsDllMain:
 mov ebx,VSMAINDLL_LOAD_SEG
 mov edi,ds:[esi + DATALOADERSECTOR._maindllSecOff]
@@ -399,9 +396,6 @@ push cx
 push edi
 call __sectorReader
 add esp,10
-
-
-
 
 _readVsDllFont:
 push word ptr GRAPHFONT_LOAD_OFFSET

@@ -32,7 +32,6 @@ mov ebp,esp
 mov ebx,kernelData
 shl ebx,4
 
-
 ;enable v86 vm
 db 0fh,20h,0e0h
 ;mov eax,cr4
@@ -44,7 +43,6 @@ or eax,40600h
 db 0fh,22h,0e0h
 ;mov cr4,eax
 
-
 ;如果启动分页机制,在tss中必须传递cr3
 ;call __startPage
 
@@ -53,6 +51,7 @@ db 0fh,22h,0e0h
 ;call __initSysTimerTss
 
 ;CALL __initV86Tss
+
 
 ;注意类型定义和变量定义寻址的不同，类型定义的成员寻址是相对于定义的偏移，变量成员的寻址是变量的实际地址加上成员的偏移地址
 mov ecx,SYSTEM_TSS_SIZE
@@ -79,6 +78,7 @@ ltr ax
 
 mov ax,ldtSelector
 lldt ax
+
 
 ;在P6以后的内核中，将紧跟着TSS正文的32字节解释为V86模式下的中断重定向位，
 ;如果存在IO映射表，那么紧跟着IO映射表的那个字节的位应全部为1，如果没有IO映射表，那么紧跟着中断重定向表的那个字节的位应全部为1，并将TSS偏移第65H处的字节置零
@@ -321,31 +321,6 @@ _kernel32MainLoop:
 ;中断(包括NMI和SMI)，debug exception，BINIT# signal，INIT# signal，或者RESET# signal
 ;CPU的HALT状态，在APCI规范中，对应于CPU的C1状态，属于CPU睡眠状态中的最低级别，即最浅的睡眠
 ;hlt will execute the next instructions after waked by interruptions
-hlt
-mov eax,KBD_SERVICE_PRINT
-int 80h
-cmp eax,0
-jz _kernel32MainLoop
-cmp word ptr ds:[ebx + _videoMode],VIDEO_MODE_3
-jz __kernelShowText
-;ss 跟ds,es相同，ss:[esp] == ds:[esp] == es:[esp],所以不必担心数据找不到的问题
-push dword ptr 0
-push eax
-mov esi,esp
-push dword ptr VIDEOMODE_FONTCOLOR_NORMAL
-push esi
-call __vesaGraphStr
-add esp, 16
-jmp _kernel32MainLoop
-
-__kernelShowText:
-push eax
-mov esi,esp
-push dword ptr TEXTMODE_FONTCOLOR_NORMAL
-push esi
-call __textModeShow32
-add esp ,12
-jmp _kernel32MainLoop
 
 __kernel32Entry endp
 
@@ -490,7 +465,6 @@ shr eax,16
 mov byte ptr ds:[ebx + kTssCmosDescriptor + 4],al
 mov byte ptr ds:[ebx + kTssCmosDescriptor + 7],ah
 mov word ptr ds:[ebx + kTssCmosDescriptor],sizeof TASKSTATESEG -1
-
 
 mov ax,ktssCmosSelector
 mov word ptr ds:[ebx + iCMOSEntry + 2],ax
