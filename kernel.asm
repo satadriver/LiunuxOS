@@ -51,7 +51,7 @@ mov ss,ax
 mov eax,ss
 shl eax,16
 mov ax,sp
-mov dword ptr ds:[_realModeStack],eax
+;mov dword ptr ds:[_realModeStack],eax
 
 push word ptr 0ch
 push offset _kernel16Start
@@ -149,7 +149,7 @@ mov ss,ax
 mov esp,BIT16_STACK_TOP
 mov ebp,esp
 
-lss sp, DWORD PTR ds:[_realModeStack]
+;lss sp, DWORD PTR ds:[_realModeStack]
 
 call __disableA20
 
@@ -228,7 +228,7 @@ add eax,offset gdtNullDescriptor
 mov dword ptr ds:[gdtReg + 2],eax
 mov word ptr ds:[gdtReg ],gdtLimit
 
-sgdt fword ptr ds:[_rmGdtReg]
+;sgdt fword ptr ds:[_rmGdtReg]
 
 lgdt fword ptr ds:[gdtReg]
 

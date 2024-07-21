@@ -467,7 +467,7 @@ shr eax,16
 mov word ptr ds:[tSysSvcEntry + 6],ax
 mov word ptr ds:[tSysSvcEntry + 2],reCode32Seg
 
-
+comment *
 mov eax,kernel
 shl eax,4
 add eax,offset __int13hProc
@@ -516,7 +516,7 @@ mov word ptr ds:[kTssInt13hDescriptor],sizeof TASKSTATESEG -1
 
 mov ax,kTssInt13hSelector
 mov word ptr ds:[tInt13Entry + 2],ax
-
+*
 
 
 add esp,40h
@@ -552,7 +552,7 @@ mov ds,ax
 mov es,ax
 cli
 
-sidt fword ptr ds:[_rmModeIdtReg]
+;sidt fword ptr ds:[_rmModeIdtReg]
 
 call __initVector
 
@@ -582,7 +582,7 @@ __initIDT endp
 
 
 __loadRmIdt proc
-lidt fword ptr ds:[_rmModeIdtReg]
+;lidt fword ptr ds:[_rmModeIdtReg]
 ret
 __loadRmIdt endp
 
