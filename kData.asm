@@ -195,9 +195,6 @@ rwUsrStackDescriptor        dq 00cff2000000ffffh
 reCode32TempSeg           	=$ - gdtNullDescriptor			;40
 reCode32TempDescriptor      dq 00cf9a000000ffffh
 
-int13CodeSeg				=$ - gdtNullDescriptor			;48
-int13CodeDescriptor			dq 00cf9a000000ffffh
-
 ;16位测试段
 rwData16Seg					= $ - gdtNullDescriptor			;56
 rwData16Descriptor			dq 000092000000ffffh
@@ -212,12 +209,6 @@ kTssExpDescriptor           dq 0000e90000000000h
 
 kTssTimerSelector			=$-gdtNullDescriptor			;88
 kTssTimerDescriptor			dq 0000e90000000000h
-
-kTssCmosSelector			=$-gdtNullDescriptor			;96
-kTssCmosDescriptor			dq 0000e90000000000h
-
-kTssInt13hSelector			=$-gdtNullDescriptor			;104
-kTssInt13hDescriptor		dq 0000e90000000000h
 
 kTssV86Selector				=$-gdtNullDescriptor			;112
 kTssV86Descriptor			dq 0000e90000000000h
@@ -234,8 +225,7 @@ eoCode32Descriptor         	dq 00cf98000000ffffh
 roData32Seg           		=$ - gdtNullDescriptor			;144
 roDataDescriptor         	dq 00cf90000000ffffh
 
-;v86TGSelector            	=$-gdtNullDescriptor
-;v86TGDescriptor				dq 0000e50000000000h			
+
 
 gdtLimit					= $-gdtNullDescriptor -1
 align 10h

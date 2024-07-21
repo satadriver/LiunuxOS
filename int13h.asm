@@ -1,5 +1,6 @@
 .386p
 
+comment *
 KERNEL segment public para use32
 assume cs:KERNEL
 
@@ -188,3 +189,4 @@ dw (offset _int13SwitchCode32Seg - offset __int13hProc)
 dw int13CodeSeg
 __int13Pm16Entry endp
 KERNEL16 ends
+*
