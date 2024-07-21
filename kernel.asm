@@ -75,7 +75,7 @@ add esp,6
 
 call __initVideo
 
-call __initDevices
+;call __initDevices
 
 call __initGDT
 
@@ -101,6 +101,10 @@ db 0fh,22h,0e0h
 
 ;enable a20 line
 ;in al,0eeh
+
+call __enableA20
+
+cli
 
 mov eax,cr0
 or al,1

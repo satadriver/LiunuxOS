@@ -294,6 +294,7 @@ tintFCEntry				GATEDESCRIPTOR<0,0,0, TRAPGATE + DPL3,0>
 tintFDEntry				GATEDESCRIPTOR<0,0,0, TRAPGATE + DPL3,0> 
 tInt13Entry				GATEDESCRIPTOR<0,0,0, TASKGATE + DPL3,0>		;0feh
 tV86Entry				GATEDESCRIPTOR<0,0,0, TASKGATE + DPL3,0>		;0ffh
+
 idtLimit				= $ - idtOffset - 1
 
 align 10h
