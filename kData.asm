@@ -227,12 +227,10 @@ eoCode32Descriptor         	dq 00cf98000000ffffh
 roData32Seg           		=$ - gdtNullDescriptor			;120
 roDataDescriptor         	dq 00cf90000000ffffh
 
-
-
 gdtLimit					= $-gdtNullDescriptor -1
+
 align 10h
 gdtReg					df 0
-
 
 align 10h
 ;exceptions AND traps
@@ -306,10 +304,7 @@ idtReg					df 0
 ;align 10h
 
 _tssExp 			TASKSTATESEG <0>
-
 _tssTimer 			TASKSTATESEG <0>
-
-
 
 _textShowPos 		dd 640
 _graphShowX			dd 0
@@ -322,7 +317,6 @@ _videoInfo			VESAInformation <?>
 _videoBlockInfo		VESAInfoBlock <>
 
 _videoTypes			dw 64 dup (0)		;mode width height bits base
-
 
 _videoMode			dw 0
 _videoBase			dd 0
