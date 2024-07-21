@@ -195,34 +195,36 @@ rwUsrStackDescriptor        dq 00cff2000000ffffh
 reCode32TempSeg           	=$ - gdtNullDescriptor			;40
 reCode32TempDescriptor      dq 00cf9a000000ffffh
 
-;16位测试段
-rwData16Seg					= $ - gdtNullDescriptor			;56
-rwData16Descriptor			dq 000092000000ffffh
-reCode16Seg					= $-gdtNullDescriptor			;64
-reCode16Descriptor			dq 00009a000000ffffh
-
-kTssSelector               	=$-gdtNullDescriptor			;72
+kTssSelector               	=$-gdtNullDescriptor			;48
 kTssDescriptor           	dq 0000e90000000000h
 
-kTssExpSelector             =$-gdtNullDescriptor			;80
+kTssExpSelector             =$-gdtNullDescriptor			;56
 kTssExpDescriptor           dq 0000e90000000000h
 
-kTssTimerSelector			=$-gdtNullDescriptor			;88
+kTssTimerSelector			=$-gdtNullDescriptor			;64
 kTssTimerDescriptor			dq 0000e90000000000h
 
-kTssV86Selector				=$-gdtNullDescriptor			;112
+kTssV86Selector				=$-gdtNullDescriptor			;72
 kTssV86Descriptor			dq 0000e90000000000h
 
-ldtSelector             	=$-gdtNullDescriptor			;120
+ldtSelector             	=$-gdtNullDescriptor			;80
 ldtDescriptor           	dq 0000e20000000000h
 
-callGateSelector            =$-gdtNullDescriptor			;128
+callGateSelector            =$-gdtNullDescriptor			;88
 callGateDescriptor      	dq 0000ec0000000000h
 
+reCode16Seg					= $-gdtNullDescriptor			;96
+reCode16Descriptor			dq 00009a000000ffffh
+
+;16位测试段
+rwData16Seg					= $ - gdtNullDescriptor			;104
+rwData16Descriptor			dq 000092000000ffffh
+
 ;32位测试段
-eoCode32Seg           		=$ - gdtNullDescriptor			;136
+eoCode32Seg           		=$ - gdtNullDescriptor			;112
 eoCode32Descriptor         	dq 00cf98000000ffffh	
-roData32Seg           		=$ - gdtNullDescriptor			;144
+
+roData32Seg           		=$ - gdtNullDescriptor			;120
 roDataDescriptor         	dq 00cf90000000ffffh
 
 
