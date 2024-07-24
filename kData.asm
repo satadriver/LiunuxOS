@@ -120,8 +120,6 @@ VESA_STATE_SEG			EQU	9000h
 VESA_STATE_OFFSET 		EQU	2200h
 VESA_STATE_ADDRESS 		EQU	(VESA_STATE_SEG * 16 + VESA_STATE_OFFSET)
 
-
-
 VSKDLL_LOAD_SEG 		EQU 2000H
 VSKDLL_LOAD_OFFSET 		EQU 0
 VSKDLL_LOAD_ADDRESS 	equ (VSKDLL_LOAD_SEG*16 + VSKDLL_LOAD_OFFSET)
@@ -386,24 +384,6 @@ _kFloppyIntrProcFz		db '__kFloppyIntrProc',0
 _kCoprocessorFz			db '__kCoprocessor',0
 _kCallGateProcFz		db '__kCallGateProc',0
 _kCmosExactTimerProcFz	db '__kCmosExactTimerProc',0
-
-;_sectorNumber		dd 0
-;_sectorCount		dd 0
-;_fileBuffer			dd 0
-;_fileBufferSize		dd 0
-;_int13ESP			dd 0
-;_int13SS			dd 0
-;_int13Result		dd 0
-
-v86_int		db 0
-v86_eax		dd 0
-v86_ecx		dd 0
-v86_edx		dd 0
-v86_ebx		dd 0
-v86_esp		dd 0
-v86_ebp		dd 0
-v86_esi		dd 0
-v86_edi		dd 0
 
 ;page index entry must be aligned 1000h,else will cause GP error,so here is not suitable
 ;align 10h
