@@ -78,7 +78,7 @@ call __initVideo
 
 call __initGDT
 
-call __initIDT
+;call __initIDT
 
 push ds
 mov eax,kernel

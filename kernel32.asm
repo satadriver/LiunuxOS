@@ -53,7 +53,7 @@ db 0fh,22h,0e0h
 ;CALL __initV86Tss
 
 comment *
-*
+
 ;注意类型定义和变量定义寻址的不同，类型定义的成员寻址是相对于定义的偏移，变量成员的寻址是变量的实际地址加上成员的偏移地址
 mov ecx,SYSTEM_TSS_SIZE
 mov edi,CURRENT_TASK_TSS_BASE
@@ -79,7 +79,7 @@ ltr ax
 
 mov ax,ldtSelector
 lldt ax
-
+*
 
 ;在P6以后的内核中，将紧跟着TSS正文的32字节解释为V86模式下的中断重定向位，
 ;如果存在IO映射表，那么紧跟着IO映射表的那个字节的位应全部为1，如果没有IO映射表，那么紧跟着中断重定向表的那个字节的位应全部为1，并将TSS偏移第65H处的字节置零
