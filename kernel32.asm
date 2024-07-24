@@ -280,20 +280,21 @@ jz _noDllEntryFunction
 ;1 lea可以处理局部变量而 offset 则不能
 ;2 假设要bx+10h->bx但又不想影响flag那就只能用lea bx,[bx+10h]了
 mov eax,Kernel
-shl eax,4
+;shl eax,4
 push eax
 
 mov eax,Kernel16
-shl eax,4
+;shl eax,4
 push eax
 
 mov eax,kernelData
-shl eax,4
+;shl eax,4
 push eax
 
-mov eax,Kernel16
-shl eax,4
-add eax,offset __v86VMLeave
+;mov eax,Kernel16
+;shl eax,4
+;add eax,offset __v86Process
+mov eax,offset __v86Process
 push eax
 
 mov eax,Kernel16

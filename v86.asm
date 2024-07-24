@@ -133,20 +133,20 @@ mov ds,ax
 mov es,ax
 
 ;set int21h
-mov eax,Kernel16
-shl eax,16
-mov ax,offset __v86Int21hProc
-mov ecx,21h
-shl ecx,2
-mov dword ptr ds:[ecx],eax
+;mov eax,Kernel16
+;shl eax,16
+;mov ax,offset __v86Int21hProc
+;mov ecx,21h
+;shl ecx,2
+;mov dword ptr ds:[ecx],eax
 
 ;set int20h
-mov eax,Kernel16
-shl eax,16
-mov ax,offset __v86Int20hProc
-mov ecx,20h
-shl ecx,2
-mov dword ptr ds:[ecx],eax
+;mov eax,Kernel16
+;shl eax,16
+;mov ax,offset __v86Int20hProc
+;mov ecx,20h
+;shl ecx,2
+;mov dword ptr ds:[ecx],eax
 
 mov ax,V86VMIPARAMS_SEG
 mov fs,ax
@@ -243,6 +243,8 @@ iretd
 __v86VMIntrProc endp
 
 align 10h
+
+
 __v86VMLeave proc
 MOV AX,KernelData
 MOV DS,AX
@@ -265,7 +267,7 @@ CMP AX,4FH
 __v86VMLeave endp
 
 
-
+comment *
 __v86Int20hProc proc
 pushad
 push ds
@@ -292,12 +294,12 @@ push cx
 push edx
 push si
 
-mov eax,dword ptr es:[si+DOS_PE_CONTROL.address]
-cmp edx,eax
-jb ___v86Int21ProcNotFoundCs
-add eax,1000h
-cmp edx,eax
-ja ___v86Int21ProcNotFoundCs
+;mov eax,dword ptr es:[si+DOS_PE_CONTROL.address]
+;cmp edx,eax
+;jb ___v86Int21ProcNotFoundCs
+;add eax,1000h
+;cmp edx,eax
+;ja ___v86Int21ProcNotFoundCs
 
 pop si
 pop edx
@@ -338,12 +340,12 @@ pop ds
 popad
 iret
 __v86Int20hProc endp
+*
 
 
 
 
-
-
+comment *
 __v86Int21hProc proc
 pushad
 push ds
@@ -420,6 +422,8 @@ popad
 iret
 __v86Int21hProc endp
 
+*
+
 __v86TssProc proc
 
 ;mov ax,3
@@ -459,5 +463,40 @@ __restoreScreen proc
 	ret
 __restoreScreen endp
 
+
+
+__v86Process proc
+mov eax,V86_INT_SEG
+mov ds,ax
+
+mov eax,kernel16
+mov es,ax
+mov ss,ax
+
+mov eax,kernel
+mov fs,ax
+mov gs,ax
+
+mov eax,KernelData
+
+mov esp,BIT16_STACK_TOP
+mov ebp,esp
+
+mov eax,ds:[V86_INT_OFFSET + 24]
+mov es:[int_cmd],al
+
+mov eax,ds:[V86_INT_OFFSET]
+mov ecx,ds:[V86_INT_OFFSET + 4]
+mov edx,ds:[V86_INT_OFFSET + 8]
+mov ebx,ds:[V86_INT_OFFSET + 12]
+mov esi,ds:[V86_INT_OFFSET + 16]
+mov edi,ds:[V86_INT_OFFSET + 20]
+
+db 0cdh
+int_cmd db 0
+
+iretd
+jmp __v86Process
+__v86Process endp
 
 Kernel16 ends
