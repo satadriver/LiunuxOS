@@ -125,7 +125,7 @@ Kernel16 Segment public para use16
 assume cs:Kernel16
 
 ;pushad or popfd will cause GP protection exp
-align 10h
+
 __v86VMIntrProc proc
 
 mov eax,0
@@ -242,7 +242,7 @@ __v86VMIntIretdAddr:
 iretd
 __v86VMIntrProc endp
 
-align 10h
+
 
 
 __v86VMLeave proc
@@ -254,16 +254,16 @@ MOV AX,4F02H
 INT 10H
 CMP AX,4FH
 
-	mov eax,dword ptr ss:[esp + TASKDOSPARAMS.address]
-	
-	mov edx,eax
-	shr eax,4
-	mov ds,ax
-	and edx,0fh
-	mov dword ptr ds:[edx + DOS_PE_CONTROL.status],DOS_THREAD_TERMINATE_CONTROL_CODE
-	_v86LeaveWait:
-	nop
-	jmp _v86LeaveWait
+mov eax,dword ptr ss:[esp + TASKDOSPARAMS.address]
+
+mov edx,eax
+shr eax,4
+mov ds,ax
+and edx,0fh
+mov dword ptr ds:[edx + DOS_PE_CONTROL.status],DOS_THREAD_TERMINATE_CONTROL_CODE
+_v86LeaveWait:
+nop
+jmp _v86LeaveWait
 __v86VMLeave endp
 
 
