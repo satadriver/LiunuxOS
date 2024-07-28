@@ -433,6 +433,7 @@ jmp __v86TssProc
 __v86TssProc endp
 
 
+comment *
 __restoreScreen proc
 	push ax
 	push cx
@@ -462,41 +463,50 @@ __restoreScreen proc
 	pop ax
 	ret
 __restoreScreen endp
-
+*
 
 
 __v86Process proc
 mov eax,V86_INT_SEG
-mov ds,ax
-
-mov eax,kernel16
-mov es,ax
-mov ss,ax
-
-mov eax,kernel
 mov fs,ax
+
+mov ax,kernel16
 mov gs,ax
 
-mov eax,KernelData
+mov eax,KERNEL_BASE_SEGMENT
+mov ss,ax
 
 mov esp,BIT16_STACK_TOP
 mov ebp,esp
 
-mov eax,ds:[V86_INT_OFFSET + 24]
-mov es:[int_cmd],al
+mov eax,kernel
+mov eax,KernelData
 
-mov eax,ds:[V86_INT_OFFSET]
-mov ecx,ds:[V86_INT_OFFSET + 4]
-mov edx,ds:[V86_INT_OFFSET + 8]
-mov ebx,ds:[V86_INT_OFFSET + 12]
-mov esi,ds:[V86_INT_OFFSET + 16]
-mov edi,ds:[V86_INT_OFFSET + 20]
+mov eax,fs:[V86_INT_OFFSET + 32]
+mov gs:[int_cmd],al
+
+mov eax,fs:[V86_INT_OFFSET + 24]
+mov ds,ax
+
+mov eax,fs:[V86_INT_OFFSET + 28]
+mov es,ax
+
+mov eax,fs:[V86_INT_OFFSET]
+mov ecx,fs:[V86_INT_OFFSET + 4]
+mov edx,fs:[V86_INT_OFFSET + 8]
+mov ebx,fs:[V86_INT_OFFSET + 12]
+mov esi,fs:[V86_INT_OFFSET + 16]
+mov edi,fs:[V86_INT_OFFSET + 20]
 
 db 0cdh
 int_cmd db 0
 
+mov fs:[V86_INT_OFFSET + 36],eax
+
 iretd
 jmp __v86Process
 __v86Process endp
+
+
 
 Kernel16 ends

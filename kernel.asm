@@ -73,6 +73,9 @@ call __textModeShow16
 add esp,6
 
 call __initVideo
+;mov ax,4f02h
+;mov bx,4003h
+;int 10h
 
 ;call __initDevices
 

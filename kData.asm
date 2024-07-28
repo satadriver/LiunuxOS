@@ -116,9 +116,9 @@ V86VMIDATA_ADDRESS		EQU (V86VMIDATA_SEG*16 + V86VMIDATA_OFFSET)
 ;V86_TASKCONTROL_OFFSET	EQU 2200H
 ;V86_TASKCONTROL_ADDRESS	EQU (V86_TASKCONTROL_SEG*16 + V86_TASKCONTROL_OFFSET)
 
-VESA_STATE_SEG			EQU	9000h
-VESA_STATE_OFFSET 		EQU	2200h
-VESA_STATE_ADDRESS 		EQU	(VESA_STATE_SEG * 16 + VESA_STATE_OFFSET)
+;VESA_STATE_SEG			EQU	9000h
+;VESA_STATE_OFFSET 		EQU	2200h
+;VESA_STATE_ADDRESS 		EQU	(VESA_STATE_SEG * 16 + VESA_STATE_OFFSET)
 
 VSKDLL_LOAD_SEG 		EQU 2000H
 VSKDLL_LOAD_OFFSET 		EQU 0
@@ -363,7 +363,8 @@ _kServicesProc		dd 0
 _kFloppyIntrProc	dd 0
 _kCoprocessor		dd 0
 _kCallGateProc		dd 0
-_kCmosExactTimerProc 	dd 0
+_kCmosExactTimerProc dd 0
+_kTextModeEntry		dd 0
 				
 _kernelDllEntryFz		db '__kernelEntry',0
 _kTaskScheduleFz		db '__kTaskSchedule',0
@@ -384,6 +385,7 @@ _kFloppyIntrProcFz		db '__kFloppyIntrProc',0
 _kCoprocessorFz			db '__kCoprocessor',0
 _kCallGateProcFz		db '__kCallGateProc',0
 _kCmosExactTimerProcFz	db '__kCmosExactTimerProc',0
+_kTextModeEntryFz		db '__kTextModeEntry',0
 
 ;page index entry must be aligned 1000h,else will cause GP error,so here is not suitable
 ;align 10h
