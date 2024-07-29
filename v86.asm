@@ -122,42 +122,13 @@ Kernel ends
 
 
 Kernel16 Segment public para use16
-assume cs:Kernel16
 
-;pushad or popfd will cause GP protection exp
+assume cs:Kernel16
 
 __v86VMIntrProc proc
 
-mov eax,0
-mov ds,ax
-mov es,ax
-
-;set int21h
-;mov eax,Kernel16
-;shl eax,16
-;mov ax,offset __v86Int21hProc
-;mov ecx,21h
-;shl ecx,2
-;mov dword ptr ds:[ecx],eax
-
-;set int20h
-;mov eax,Kernel16
-;shl eax,16
-;mov ax,offset __v86Int20hProc
-;mov ecx,20h
-;shl ecx,2
-;mov dword ptr ds:[ecx],eax
-
 mov ax,V86VMIPARAMS_SEG
 mov fs,ax
-mov ax,Kernel16
-mov gs,ax
-mov ax,kernelData
-mov ds,ax
-mov es,ax
-mov ax,KERNEL_BASE_SEGMENT
-mov ss,ax
-mov esp,BIT16_STACK_TOP
 
 mov byte ptr fs:[V86VMIPARAMS_OFFSET + V86VMIPARAMS._work],0
 
@@ -166,21 +137,16 @@ mov ax,V86VMIPARAMS_SEG
 mov fs,ax
 mov ax,Kernel16
 mov gs,ax
-mov ax,kernelData
-mov ds,ax
-mov es,ax
 mov ax,KERNEL_BASE_SEGMENT
 mov ss,ax
 mov esp,BIT16_STACK_TOP
 
-mov ecx,8
+mov ecx,256
 _v86Wait:
 nop
 ;fwait 指令会触发异常？
 ;fwait
 ;pause 指令会触发异常？
-;db 0f3h,90h
-;db 0f3h,90h
 ;db 0f3h,90h
 loop _v86Wait
 
@@ -188,17 +154,9 @@ cmp byte ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._work],0
 jz _v86VmIntCheckRequest
 
 mov al,byte ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._intNumber]
-cmp al,3
-jz _v86VMInt3
 mov byte ptr gs:[_v86VMIntNumber],al
 mov byte ptr gs:[_v86VMIntOpcode],0cdh
-jmp _v86VMIntSetRegs
 
-_v86VMInt3:
-mov byte ptr gs:[_v86VMIntOpcode],0cch
-mov byte ptr gs:[_v86VMIntNumber],90h
-
-_v86VMIntSetRegs:
 push word ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._ds]
 pop ds
 push word ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._es]
@@ -211,35 +169,43 @@ mov ebx,dword ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._ebx]
 mov esi,dword ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._esi]
 mov edi,dword ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._edi]
 
-;stc
 _v86VMIntOpcode:
 db 0cdh
 _v86VMIntNumber:
 db 13h
 
-jc _V86VMIWorkError
-
-;cmp ah,0
-;jnz _V86VMIWorkError
-
 mov ax,V86VMIPARAMS_SEG
 mov fs,ax
-mov dword ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._result],1
-jmp _V86VMIWorkOK
+mov ax,Kernel16
+mov gs,ax
+jc _checkV86CarryError
+cmp ah,0
+jnz _checkV86CarryError
+
+jmp _V86VMIWorkOk
+
+_checkV86CarryError:
+cmp byte ptr gs:[_v86VMIntNumber],13h
+jz _V86VMIWorkError
+
+jmp _V86VMIWorkOk
 
 _V86VMIWorkError:
-mov ax,V86VMIPARAMS_SEG
-mov fs,ax
 mov dword ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._result],0
+jmp _V86VMIComplete
 
-_V86VMIWorkOK:
+_V86VMIWorkOk:
+mov dword ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._result],1
+
+_V86VMIComplete:
 mov byte ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._work],0
 
 jmp _v86VmIntCheckRequest
 
-__v86VMIntIretdAddr:
-;iretd will cause GP exception
 iretd
+
+jmp _v86VmIntCheckRequest
+
 __v86VMIntrProc endp
 
 
