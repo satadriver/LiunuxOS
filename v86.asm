@@ -174,10 +174,11 @@ db 0cdh
 _v86VMIntNumber:
 db 13h
 
-mov ax,V86VMIPARAMS_SEG
-mov fs,ax
-mov ax,Kernel16
-mov gs,ax
+push word ptr V86VMIPARAMS_SEG
+pop fs
+push word ptr Kernel16
+pop gs
+
 jc _checkV86CarryError
 cmp ah,0
 jnz _checkV86CarryError
