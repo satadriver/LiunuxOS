@@ -72,10 +72,13 @@ push cs
 call __textModeShow16
 add esp,6
 
+IFDEF TEXTMODE_TAG
+mov ax,4f02h
+mov bx,4003h
+int 10h
+ELSE
 call __initVideo
-;mov ax,4f02h
-;mov bx,4003h
-;int 10h
+ENDIF
 
 ;call __initDevices
 

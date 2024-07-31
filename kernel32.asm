@@ -317,13 +317,15 @@ mov eax,ebx
 add eax,offset _videoInfo
 push eax
 
-;mov eax,ds:[ebx + _kTextModeEntry]
-;call eax
-;add esp,28
-
+IFDEF TEXTMODE_TAG
+mov eax,ds:[ebx + _kTextModeEntry]
+call eax
+add esp,28
+ELSE
 mov eax,ds:[ebx + _kernelDllEntry]
 call  eax
 add esp,28
+ENDIF
 
 _noDllEntryFunction:
 sti
