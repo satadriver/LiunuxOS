@@ -468,8 +468,22 @@ mov edi,fs:[V86_INT_OFFSET + 20]
 db 0cdh
 int_cmd db 0
 
-mov fs:[V86_INT_OFFSET + 36],eax
+JC _CHECK_INT255_ERROR
+cmp ah,0
+jnz _CHECK_INT255_ERROR
 
+JMP _INT255_RESULT_OK
+
+_CHECK_INT255_ERROR:
+CMP BYTE PTR gs:[int_cmd],13H
+JNZ _INT255_RESULT_OK
+mov dword ptr fs:[V86_INT_OFFSET + 36],0
+jmp _int255_complete
+
+_INT255_RESULT_OK:
+mov dword ptr fs:[V86_INT_OFFSET + 36],1
+
+_int255_complete:
 iretd
 jmp __v86Process
 __v86Process endp
