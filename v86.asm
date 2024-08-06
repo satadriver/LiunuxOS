@@ -465,7 +465,7 @@ mov ebx,fs:[V86_INT_OFFSET + 12]
 mov esi,fs:[V86_INT_OFFSET + 16]
 mov edi,fs:[V86_INT_OFFSET + 20]
 
-db 0cdh
+		db 0cdh
 int_cmd db 0
 
 JC _CHECK_INT255_ERROR
