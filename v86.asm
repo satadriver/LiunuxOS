@@ -466,7 +466,12 @@ mov esi,fs:[V86_INT_OFFSET + 16]
 mov edi,fs:[V86_INT_OFFSET + 20]
 
 		db 0cdh
-int_cmd db 0
+int_cmd db 13h
+
+push word ptr V86_INT_SEG
+pop fs
+push word ptr Kernel16
+pop gs
 
 JC _CHECK_INT255_ERROR
 cmp ah,0

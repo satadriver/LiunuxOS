@@ -87,15 +87,29 @@ call __initGDT
 ;call __initIDT
 
 push ds
+push es
 mov eax,kernel
 mov ds,ax
 shl eax,4
 add eax,offset __kernel32Entry
 mov dword ptr ds:[__kernel32EntryOffset],eax
-;mov eax,Kernel
-;shl eax,4
-;add eax,offset _int13RetPm32
-;mov dword ptr ds:[__int13RetPm32EIP],eax
+
+mov eax,kernel
+mov ds,ax
+shl eax,4
+add eax,offset __initAP32Entry
+mov dword ptr ds:[__initAP32EntryOffset],eax
+
+mov ax,kernel
+mov ds,ax
+mov esi,offset __initAP32Entry
+cld 
+mov es,AP_INIT_SEG
+mov edi,AP_INIT_OFFSET
+mov ecx,__initAP16Size
+rep movsb
+
+pop es
 pop ds
 
 ;开机后cr0默认为10h et=1 浮点处理器存在,且bit4不可写
@@ -175,6 +189,43 @@ sti
 mov ah,4ch
 int 21h
 _kernel16Entry endp
+
+
+__initAP16 proc
+
+	mov eax, AP_INIT_ADDRESS
+	shr eax,12
+	mov ds,ax
+	mov es,ax
+	mov fs,ax
+	mov gs,ax
+	mov ss,ax
+
+	mov esp, V86_STACK_SIZE - STACK_TOP_DUMMY
+	mov eax, AP_INIT_ADDRESS
+	shr eax, 12
+	and eax, 0xf000
+	sub esp,eax
+	mov ebp,esp
+
+	cli
+	in al,92h
+	or al,2
+	out 92h,al
+
+	mov eax,cr0
+	or eax,1
+	mov cr0,eax
+
+	_pmInitAPEntry 			db 0eah
+	_pmInitAPEntryOffset	dw __initAP32
+	_pmInitAPEntrySelector	dw reCode32TempSeg
+
+__initAP16 endp
+
+__initAP16Size equ $ - __initAP16
+
+
 
 
 

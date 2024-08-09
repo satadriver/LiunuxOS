@@ -334,7 +334,6 @@ _waitVsDll:
 hlt
 jmp _waitVsDll
 
-_kernel32MainLoop:
 ;中断(包括NMI和SMI)，debug exception，BINIT# signal，INIT# signal，或者RESET# signal
 ;CPU的HALT状态，在APCI规范中，对应于CPU的C1状态，属于CPU睡眠状态中的最低级别，即最浅的睡眠
 ;hlt will execute the next instructions after waked by interruptions
@@ -350,6 +349,45 @@ __kernel32EntrySelector		dw reCode32Seg
 __tmp32Entry endp
 
 
+__initAP32 proc
+db 0eah
+__initAP32EntryOffset 		dd 0
+__initAP32EntrySelector		dw reCode32Seg
+__initAP32 endp
+
+
+
+__initAP32Entry proc
+mov ax,rwData32Seg
+mov ds,ax
+mov es,ax
+mov fs,ax
+mov gs,ax
+mov ss,ax
+mov eax,0
+mov ecx,0
+mov edx,0
+mov ebx,0
+mov esi,0
+mov edi,0
+mov esp,KERNEL_TASK_STACK_TOP
+mov ebp,esp
+
+mov ebx,kernelData
+shl ebx,4
+
+mov eax,ebx
+add eax,offset __apInitProcFz
+push eax
+push dword ptr KERNEL_DLL_BASE
+call __getProcAddress
+add esp,8
+mov ds:[ebx + __apInitProc],eax
+
+call eax
+
+__initAP32Entry endp
+
 
 __kernel32Exit proc
 cli
@@ -357,6 +395,7 @@ db 0eah
 dd offset _pmCode16Entry
 dw reCode16Seg
 __kernel32Exit endp
+
 
 
 
