@@ -39,7 +39,6 @@ TIMER0_FREQUENCY_ADDR	EQU CMOS_DATETIME_STRING + 100H
 CMOS_SECONDS_TOTAL		EQU TIMER0_FREQUENCY_ADDR + 4
 CMOS_TICK_COUNT 		EQU CMOS_SECONDS_TOTAL + 4
 TIMER0_TICK_COUNT		EQU CMOS_TICK_COUNT + 4
-;GP_EXEPTION_SHOW_TOTAL	EQU TIMER0_TICK_COUNT + 4
 
 VESA_INFO_BASE			EQU 513000H
 
@@ -47,7 +46,7 @@ KEYBOARD_BUFFER			EQU 518000H
 
 MOUSE_BUFFER			EQU 520000H
 
-;LDT_BASE				EQU 5c0000H
+LDT_BASE				EQU 5c0000H
 
 CURRENT_TASK_TSS_BASE	EQU 540000H
 
@@ -371,7 +370,7 @@ _kCoprocessor		dd 0
 _kCallGateProc		dd 0
 _kCmosExactTimerProc dd 0
 _kTextModeEntry		dd 0
-__apInitProc		dd 0
+__kApInitProc		dd 0
 				
 _kernelDllEntryFz		db '__kernelEntry',0
 _kTaskScheduleFz		db '__kTaskSchedule',0
@@ -393,7 +392,7 @@ _kCoprocessorFz			db '__kCoprocessor',0
 _kCallGateProcFz		db '__kCallGateProc',0
 _kCmosExactTimerProcFz	db '__kCmosExactTimerProc',0
 _kTextModeEntryFz		db '__kTextModeEntry',0
-__apInitProcFz			db '__apInitProc',0
+__kApInitProcFz			db '__kApInitProc',0
 
 ;page index entry must be aligned 1000h,else will cause GP error,so here is not suitable
 ;align 10h

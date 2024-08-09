@@ -102,11 +102,12 @@ mov dword ptr ds:[__initAP32EntryOffset],eax
 
 mov ax,kernel
 mov ds,ax
-mov esi,offset __initAP32Entry
-cld 
-mov es,AP_INIT_SEG
+mov esi,offset __initAP16
+mov eax,AP_INIT_SEG
+mov es,ax
 mov edi,AP_INIT_OFFSET
 mov ecx,__initAP16Size
+cld 
 rep movsb
 
 pop es
@@ -193,7 +194,7 @@ _kernel16Entry endp
 
 __initAP16 proc
 
-	mov eax, AP_INIT_ADDRESS
+	mov eax, V86_INT_ADDRESS
 	shr eax,12
 	mov ds,ax
 	mov es,ax
@@ -201,10 +202,11 @@ __initAP16 proc
 	mov gs,ax
 	mov ss,ax
 
-	mov esp, V86_STACK_SIZE - STACK_TOP_DUMMY
-	mov eax, AP_INIT_ADDRESS
+	mov esp, BIT16_STACK_TOP
+	
+	mov eax, V86_INT_ADDRESS
 	shr eax, 12
-	and eax, 0xf000
+	and eax, 0f000h
 	sub esp,eax
 	mov ebp,esp
 

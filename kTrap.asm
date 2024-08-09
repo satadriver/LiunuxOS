@@ -1071,4 +1071,7 @@ pop ds
 popad
 iretd
 __tVirtualErrorProc endp
+
+
+GP_EXEPTION_SHOW_TOTAL dd 0
 Kernel ends

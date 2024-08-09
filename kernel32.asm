@@ -377,12 +377,12 @@ mov ebx,kernelData
 shl ebx,4
 
 mov eax,ebx
-add eax,offset __apInitProcFz
+add eax,offset __kApInitProcFz
 push eax
 push dword ptr KERNEL_DLL_BASE
 call __getProcAddress
 add esp,8
-mov ds:[ebx + __apInitProc],eax
+mov ds:[ebx + __kApInitProc],eax
 
 call eax
 
