@@ -32,16 +32,10 @@ mov ebp,esp
 mov ebx,kernelData
 shl ebx,4
 
-;enable v86 vm
-db 0fh,20h,0e0h
-;mov eax,cr4
-or eax,1		;vme
-or eax,10h
-or eax,2
+;db 0fh,20h,0e0h
+;or eax,1			;vme
 ;or eax,40600h		;OSFXSR(bit9) and OSXMMEXCPT(bit10) and OSXSAVE(bit18)
-or eax,40600h
-db 0fh,22h,0e0h
-;mov cr4,eax
+;db 0fh,22h,0e0h
 
 ;如果启动分页机制,在tss中必须传递cr3
 ;call __startPage
