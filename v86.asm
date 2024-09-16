@@ -207,6 +207,7 @@ iretd
 
 jmp _v86VmIntCheckRequest
 
+__v86VMIntrProcEnd equ $
 __v86VMIntrProc endp
 
 

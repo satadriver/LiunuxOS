@@ -300,6 +300,10 @@ push eax
 mov eax,offset __v86Process
 push eax
 
+mov eax,__v86VMIntrProcEnd
+sub eax,__v86VMIntrProc
+push eax
+
 mov eax,Kernel16
 shl eax,4
 add eax,offset __v86VMIntrProc
