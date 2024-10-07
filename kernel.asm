@@ -72,6 +72,17 @@ push cs
 call __textModeShow16
 add esp,6
 
+push ds
+mov ax,0
+mov ds,ax
+xor eax,eax
+mov ax,KERNEL16
+shl eax,16
+mov ax,offset __v86ProcEnd
+mov dword ptr ds:[20h*4],eax
+mov dword ptr ds:[21h*4],eax
+pop ds
+
 IFDEF TEXTMODE_TAG
 mov ax,4f02h
 mov bx,4003h
@@ -478,6 +489,24 @@ ret
 __loadAllFiles endp
 
 
+
+__v86ProcEnd proc
+
+mov ax,kernelData
+mov ds,ax
+mov es,ax
+mov ax,4f02h
+xor ebx,ebx
+mov bx,ds:[_videoMode]
+or bx,0c000h
+int 10h
+
+;iret
+
+__v86ProcEndLoop:
+jmp __v86ProcEndLoop
+
+__v86ProcEnd endp
 
 
 _kernel16Start db 'kernel start',0
