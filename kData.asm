@@ -321,13 +321,14 @@ _graphShowY			dd 0
 
 _videoBufTotal		dd 0
 
+_videoMode			dw 0
 _videoInfo			VESAInformation <?>
 
 _videoBlockInfo		VESAInfoBlock <>
 
 _videoTypes			dw 64 dup (0)		;mode width height bits base
 
-_videoMode			dw 0
+
 _videoBase			dd 0
 _bytesPerLine		dd 0
 _bytesPerPixel		dd 0
