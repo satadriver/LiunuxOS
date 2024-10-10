@@ -140,9 +140,11 @@ mov gs,ax
 mov ax,KERNEL_BASE_SEGMENT
 mov ss,ax
 mov esp,BIT16_STACK_TOP
-
+sti
 mov ecx,256
 _v86Wait:
+
+;hlt
 nop
 ;fwait 指令会触发异常？
 ;fwait
@@ -201,12 +203,14 @@ mov dword ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._result],1
 _V86VMIComplete:
 mov byte ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._work],0
 
+
 jmp _v86VmIntCheckRequest
 
 iretd
 
 jmp _v86VmIntCheckRequest
 
+db 16 dup (0)
 __v86VMIntrProcEnd equ $
 __v86VMIntrProc endp
 

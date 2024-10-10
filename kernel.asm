@@ -501,11 +501,14 @@ mov bx,ds:[_videoMode]
 or bx,0c000h
 int 10h
 
+sti
 ;iret
 
 __v86ProcEndLoop:
 jmp __v86ProcEndLoop
 
+__v86ProcEndLoop2:
+jmp __v86ProcEndLoop2
 __v86ProcEnd endp
 
 
