@@ -328,7 +328,7 @@ _videoBlockInfo		VESAInfoBlock <>
 
 _videoTypes			dw 64 dup (0)		;mode width height bits base
 
-
+text_mode_tag		dd 0
 _videoBase			dd 0
 _bytesPerLine		dd 0
 _bytesPerPixel		dd 0

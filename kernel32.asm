@@ -97,7 +97,7 @@ _useKernelTextMode:
 ;call __vsDllLoader
 ;add esp,8
 ;cmp eax,0
-;jz _noDllEntryFunction
+;jz _DllEntryEnd
 
 push dword ptr KERNEL_DLL_BASE
 push dword ptr VSKDLL_LOAD_ADDRESS
@@ -105,7 +105,7 @@ call __vsDllLoader
 ;mov ds:[ebx + _dllLoadAddr],eax
 add esp,8
 cmp eax,0
-jz _noDllEntryFunction
+jz _DllEntryEnd
 
 mov eax,ebx
 add eax,offset _kernelDllEntryFz
@@ -277,7 +277,7 @@ add esp,8
 mov ds:[ebx + _kTextModeEntry],eax
 
 cmp dword ptr ds:[ebx + _kernelDllEntry],0
-jz _noDllEntryFunction
+jz _DllEntryEnd
 
 
 ;1 lea可以处理局部变量而 offset 则不能
@@ -315,17 +315,23 @@ mov eax,ebx
 add eax,offset _videoInfo
 push eax
 
-IFDEF TEXTMODE_TAG
-mov eax,ds:[ebx + _kTextModeEntry]
-call eax
-add esp,28
-ELSE
+;IFDEF TEXTMODE_TAG
+;ELSE
+;ENDIF
+cmp dword ptr ds:[ebx + text_mode_tag],0
+jnz __setTextVideoMode
+
 mov eax,ds:[ebx + _kernelDllEntry]
 call  eax
 add esp,28
-ENDIF
+jmp _DllEntryEnd
 
-_noDllEntryFunction:
+__setTextVideoMode:
+mov eax,ds:[ebx + _kTextModeEntry]
+call eax
+add esp,28
+
+_DllEntryEnd:
 sti
 
 _waitVsDll:

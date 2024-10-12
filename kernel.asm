@@ -83,14 +83,22 @@ mov dword ptr ds:[20h*4],eax
 mov dword ptr ds:[21h*4],eax
 pop ds
 
-IFDEF TEXTMODE_TAG
+cmp ds:[text_mode_tag],1
+jz __toTextModeScreen
+
+;IFDEF TEXTMODE_TAG
+;ELSE
+;ENDIF
+call __initVideo
+jmp __setTextVideoEnd
+
+__toTextModeScreen:
 mov ax,4f02h
 mov bx,4003h
 int 10h
-ELSE
-call __initVideo
-ENDIF
+jmp __setTextVideoEnd
 
+__setTextVideoEnd:
 ;call __initDevices
 
 call __initGDT
