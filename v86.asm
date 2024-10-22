@@ -140,7 +140,7 @@ mov gs,ax
 mov ax,KERNEL_BASE_SEGMENT
 mov ss,ax
 mov esp,BIT16_STACK_TOP
-sti
+;sti
 mov ecx,256
 _v86Wait:
 
@@ -202,7 +202,6 @@ mov dword ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._result],1
 
 _V86VMIComplete:
 mov byte ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._work],0
-
 
 jmp _v86VmIntCheckRequest
 
@@ -439,6 +438,7 @@ __restoreScreen endp
 
 
 __v86Process proc
+;cli
 mov eax,V86_INT_SEG
 mov fs,ax
 
@@ -494,6 +494,10 @@ _INT255_RESULT_OK:
 mov dword ptr fs:[V86_INT_OFFSET + 36],1
 
 _int255_complete:
+nop
+int 254
+jmp __v86Process
+
 iretd
 jmp __v86Process
 __v86Process endp
