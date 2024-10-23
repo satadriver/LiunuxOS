@@ -203,6 +203,8 @@ mov dword ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._result],1
 _V86VMIComplete:
 mov byte ptr fs:[V86VMIPARAMS_OFFSET +V86VMIPARAMS._work],0
 
+;int 3
+
 jmp _v86VmIntCheckRequest
 
 iretd
@@ -495,7 +497,8 @@ mov dword ptr fs:[V86_INT_OFFSET + 36],1
 
 _int255_complete:
 nop
-int 254
+int 3
+;int 254
 jmp __v86Process
 
 iretd
