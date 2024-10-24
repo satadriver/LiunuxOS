@@ -182,8 +182,8 @@ push word ptr Kernel16
 pop gs
 
 jc _checkV86CarryError
-cmp ah,0
-jnz _checkV86CarryError
+;cmp ah,0					;ax=41h, bx=55aah not support,whenever succucess or failure, ah is not 0
+;jnz _checkV86CarryError
 
 jmp _V86VMIWorkOk
 
@@ -481,8 +481,8 @@ push word ptr Kernel16
 pop gs
 
 JC _CHECK_INT255_ERROR
-cmp ah,0
-jnz _CHECK_INT255_ERROR
+;cmp ah,0
+;jnz _CHECK_INT255_ERROR
 
 JMP _INT255_RESULT_OK
 
