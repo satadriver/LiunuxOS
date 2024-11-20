@@ -1,8 +1,31 @@
 # LiunuxOS
 
-liunuxos 汇编语言部分。
+liunuxos包含两个工程，liunuxos和liunuxos_c。liunuxos是基于masm的汇编代码，liunuxos_c是基于vs的c、c++代码。
 
-主要模块：
+编译方法：
+1.生成mb.comr,loader.com,liunuxos.exe
+	在windows xp、windows 7 32位command/cmd命令行下执行：
+ 
+   	masm mbr;
+   	link mbr;
+   	exe2bin mbr.exe mbr.com
+   	上述3条命令生成mbr.com
+    
+   	masm loader;
+   	link loader;
+       	exe2bin loader.exe loader.com
+   	上述3条命令生成loader.com
+
+       	masm kernel;
+   	link kernel;
+   	上述2条命令生成kernel.exe
+2. visual studio下编译生成kernel.dll、main.dll、liunuxsetup.exe。注意要关闭代码优化、GS、c++异常等编译选项。
+3. 将kernel.dll、main.dll、liunuxsetup.exe、mbr.com、loader.com，kernel.exe等文件放在c盘下，比如新建一个liunux文件下，目录为c:\liunux，在windows/linux系统中打开文件夹，并执行liunuxset.exe，即可将系统安装到当前系统中，重启后会进入liunuxos。
+   
+
+
+
+liunuxos主要功能：
 
  1. 进程线程创建和调度。时钟计时器每过一个计时周期就会触发一次中断，这就是liunuxos的线程切换频率，大概为1ms。
 
@@ -20,8 +43,8 @@ liunuxos 汇编语言部分。
  2. 文件系统读写。主要是ntfs、fat32、iso9660文件系统的读取操作。文件系统的资料网上很多，请自行百度，我只是重复的搬砖而已。硬盘驱动器在虚拟机创建时只能支持ATA和SATA模式。
  
  3. 内存管理。主要是内存分配和虚拟内存的实现。关于虚拟内存，网上资料很多，但是没有找到切实可行的方法。我的做法分为两步：							 
-首先，在kernel.exe进入保护模式时，开启分页，具体的分页策略是：物理地址和线性地址一一对应的关系。第二步，在进程创建时，复		制页目录表，但是只包括系统空间的部分页表，其他页表设置为0，同时调用全局的内存分配程序（采用slab算法，分配的是物理地址而不是线性地址），分配的内存大小页面对齐，然后修改进程的页表项，并将其映射为从4gb依次往低地址的递减的虚拟线性地址。
-此种分页下，系统进程的线性地址都是物理地址，并且可以被每个用户进程访问，但是应用程序的代码段、数据段、堆栈段地址都是线性递减的。
+首先，在kernel.exe进入保护模式时，开启分页，具体的分页策略是：物理地址和线性地址一一对应的关系。第二步，在进程创建时，复制页目录表，但是只包括系统空间的部分页表，其他页表设置为0，同时调用全局的内存分配程序（采用slab算法，分配的是物理地址而不是线性地址），分配的内存大小页面对齐，然后修改进程的页表项，并将其映射为从1gb依次往高地址的递增的虚拟线性地址。
+此种分页下，系统进程的线性地址都是物理地址，并且可以被每个用户进程访问，但是应用程序的代码段、数据段、堆栈段地址都是线性递增的。，可以实现用户进程空间的隔离。
 
 	liunuxos虽然支持虚拟内存，但是不支持内存交换等功能。
 
