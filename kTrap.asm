@@ -2,8 +2,8 @@
 
 include kDebugger.asm
 
-Kernel Segment public para use32
-assume cs:Kernel
+Kernel32 Segment public para use32
+assume cs:Kernel32
 
 ;32位堆栈压入32位，即使只有一个字节
 ;exception stack:
@@ -1074,4 +1074,4 @@ __tVirtualErrorProc endp
 
 
 GP_EXEPTION_SHOW_TOTAL dd 0
-Kernel ends
+Kernel32 ends

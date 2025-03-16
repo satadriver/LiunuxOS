@@ -10,8 +10,8 @@ include kmemory.asm
 include kdloader.asm
 
 
-Kernel Segment public para use32
-assume cs:Kernel
+Kernel32 Segment public para use32
+assume cs:Kernel32
 
 __kernel32Entry proc
 mov ax,rwData32Seg
@@ -239,7 +239,13 @@ call __getProcAddress
 add esp,8
 mov ds:[ebx + _kCmosExactTimerProc],eax
 
-
+mov eax,ebx
+add eax,offset __kApInitProcFz
+push eax
+push dword ptr KERNEL_DLL_BASE
+call __getProcAddress
+add esp,8
+mov ds:[ebx + __kApInitProc],eax
 
 mov eax,ebx
 add eax,offset _kFloppyIntrProcFz
@@ -282,7 +288,7 @@ jz _DllEntryEnd
 
 ;1 lea可以处理局部变量而 offset 则不能
 ;2 假设要bx+10h->bx但又不想影响flag那就只能用lea bx,[bx+10h]了
-mov eax,Kernel
+mov eax,Kernel32
 ;shl eax,4
 push eax
 
@@ -374,20 +380,18 @@ mov edx,0
 mov ebx,0
 mov esi,0
 mov edi,0
-mov esp,KERNEL_TASK_STACK_TOP
-mov ebp,esp
 
 mov ebx,kernelData
 shl ebx,4
+inc dword ptr ds:[ebx+__APCounter]
+mov  eax,ds:[ebx+__APCounter]
+mov ecx,KTASK_STACK_SIZE
+mul ecx
+add eax,AP_KSTACK_BASE
+mov esp,eax
+mov ebp,esp
 
-mov eax,ebx
-add eax,offset __kApInitProcFz
-push eax
-push dword ptr KERNEL_DLL_BASE
-call __getProcAddress
-add esp,8
-mov ds:[ebx + __kApInitProc],eax
-
+mov eax,ds:[ebx + __kApInitProc]
 call eax
 
 __initAP32Entry endp
@@ -417,7 +421,7 @@ push edi
 
 sub esp,40h
 
-mov ebx,kernel
+mov ebx,kernel32
 shl ebx,4
 
 mov eax,ebx
@@ -486,7 +490,7 @@ push edi
 
 sub esp,40h
 
-mov ebx,kernel
+mov ebx,kernel32
 shl ebx,4
 
 mov eax,ebx
@@ -542,7 +546,7 @@ __initCmosTimerTss endp
 
 *
 
-kernel ends
+Kernel32 ends
 
 
 

@@ -1,8 +1,8 @@
 .386p
 
 comment *
-KERNEL segment public para use32
-assume cs:KERNEL
+Kernel32 segment public para use32
+assume cs:Kernel32
 
 align 10h
 ;param:edi->secno,edi+4->seccnt,edi+8->buf,edi + 12->bufsize
@@ -83,7 +83,7 @@ jmp __int13hProc
 __int13hProc endp
 
 
-kernel ends
+Kernel32 ends
 
 
 

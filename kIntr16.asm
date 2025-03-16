@@ -44,7 +44,7 @@ mov eax,kernelData
 mov ds,ax
 mov es,ax
 
-mov ebx,KERNEL
+mov ebx,Kernel32
 shl ebx,4
 
 ;SETGATEADDR <tDivEntry>,<KERNEL>,<__tDivExceptionProc>,<reCode32Seg>
@@ -459,7 +459,7 @@ mov word ptr ds:[iCDROMEntry + 6],ax
 mov word ptr ds:[iCDROMEntry + 2],reCode32Seg
 
 
-mov eax,kernel
+mov eax,Kernel32
 shl eax,4
 add eax,offset __kServicesProc
 mov word ptr ds:[tSysSvcEntry],ax
@@ -468,7 +468,7 @@ mov word ptr ds:[tSysSvcEntry + 6],ax
 mov word ptr ds:[tSysSvcEntry + 2],reCode32Seg
 
 comment *
-mov eax,kernel
+mov eax,Kernel32
 shl eax,4
 add eax,offset __int13hProc
 mov word ptr ds:[int13CodeDescriptor+2],ax

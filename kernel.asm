@@ -107,19 +107,19 @@ call __initGDT
 
 push ds
 push es
-mov eax,kernel
+mov eax,Kernel32
 mov ds,ax
 shl eax,4
 add eax,offset __kernel32Entry
 mov dword ptr ds:[__kernel32EntryOffset],eax
 
-mov eax,kernel
+mov eax,Kernel32
 mov ds,ax
 shl eax,4
 add eax,offset __initAP32Entry
 mov dword ptr ds:[__initAP32EntryOffset],eax
 
-mov ax,kernel
+mov ax,kernel16
 mov ds,ax
 mov esi,offset __initAP16
 mov eax,AP_INIT_SEG
@@ -213,8 +213,7 @@ _kernel16Entry endp
 
 __initAP16 proc
 
-	mov eax, V86_INT_ADDRESS
-	shr eax,12
+	mov eax, kerneldata
 	mov ds,ax
 	mov es,ax
 	mov fs,ax
@@ -222,17 +221,16 @@ __initAP16 proc
 	mov ss,ax
 
 	mov esp, BIT16_STACK_TOP
-	
-	mov eax, V86_INT_ADDRESS
-	shr eax, 12
-	and eax, 0f000h
-	sub esp,eax
 	mov ebp,esp
 
 	cli
 	in al,92h
 	or al,2
 	out 92h,al
+	
+	call __enableA20
+	
+	lgdt fword ptr ds:[gdtReg]
 
 	mov eax,cr0
 	or eax,1
@@ -274,7 +272,7 @@ mov byte ptr ds:[ldtDescriptor +4],al
 mov byte ptr ds:[ldtDescriptor +7],ah
 mov word ptr ds:[ldtDescriptor],0ffffh
 
-mov eax,Kernel
+mov eax,Kernel32
 shl eax,4
 add eax,offset __callGateEntry
 mov word ptr ds:[callGateDescriptor],ax
@@ -296,7 +294,7 @@ mov word ptr ds:[rwData16Descriptor+2],ax
 shr eax,16
 mov byte ptr ds:[rwData16Descriptor +4],al
 
-mov eax,Kernel
+mov eax,Kernel32
 shl eax,4
 mov word ptr ds:[reCode32TempDescriptor+2],ax
 shr eax,16
