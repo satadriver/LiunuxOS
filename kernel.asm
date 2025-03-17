@@ -212,7 +212,7 @@ _kernel16Entry endp
 
 
 __initAP16 proc
-
+	cli
 	mov eax, kerneldata
 	mov ds,ax
 	mov es,ax
@@ -223,7 +223,6 @@ __initAP16 proc
 	mov esp, BIT16_STACK_TOP
 	mov ebp,esp
 
-	cli
 	in al,92h
 	or al,2
 	out 92h,al
