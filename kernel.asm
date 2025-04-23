@@ -227,7 +227,11 @@ __initAP16 proc
 	or al,2
 	out 92h,al
 	
-	call __enableA20
+	;call __enableA20
+	
+	mov eax,0
+	;mov cr4,eax
+	db 0fh,22h,0e0h
 	
 	lgdt fword ptr ds:[gdtReg]
 
@@ -236,12 +240,12 @@ __initAP16 proc
 	mov cr0,eax
 
 	_pmInitAPEntry 			db 0eah
-	_pmInitAPEntryOffset	dw __initAP32
+	_pmInitAPEntryOffset	dw offset __initAP32
 	_pmInitAPEntrySelector	dw reCode32TempSeg
 
 __initAP16 endp
 
-__initAP16Size equ $ - __initAP16
+__initAP16Size equ $ - __initAP16 + 100h
 
 
 
