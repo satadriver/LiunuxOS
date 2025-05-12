@@ -383,7 +383,7 @@ mov edi,0
 
 mov ebx,kernelData
 shl ebx,4
-inc dword ptr ds:[ebx+__APCounter]
+lock inc dword ptr ds:[ebx+__APCounter]
 mov  eax,ds:[ebx+__APCounter]
 mov ecx,KTASK_STACK_SIZE
 mul ecx

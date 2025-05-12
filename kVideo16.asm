@@ -739,7 +739,7 @@ __initVideo proc
 	call __getVesaMode
 	cmp eax,0
 	jnz __checkVideoMode
-	
+_ToVideoTextMode:	
 	mov ax,3
 	int 10h
 	mov eax,0
@@ -843,6 +843,9 @@ __checkVideoMode:
 __initVideo_getmode:
 	mov ah,0
 	int 16h
+	cmp al,1bh
+	jz _ToVideoTextMode
+	
 	sub al,30h
 	cmp al,0
 	jb __initVideo_getmode
