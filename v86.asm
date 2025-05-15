@@ -499,10 +499,18 @@ _int255_complete:
 nop
 ;int 3
 ;int 254
-jmp __v86Process
+;jmp __v86Process
 
-iretd
-jmp __v86Process
+;iretd
+;jmp __v86Process
+__v86ProcessLoop:
+jmp __v86ProcessLoop
+
+__v86ProcessLoop2:
+jmp __v86ProcessLoop2
+__v86ProcEnd endp
+
+
 __v86Process endp
 
 
