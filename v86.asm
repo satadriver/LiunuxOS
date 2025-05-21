@@ -508,8 +508,6 @@ jmp __v86ProcessLoop
 
 __v86ProcessLoop2:
 jmp __v86ProcessLoop2
-__v86ProcEnd endp
-
 
 __v86Process endp
 

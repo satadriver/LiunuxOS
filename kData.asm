@@ -376,6 +376,7 @@ _kTextModeEntry		dd 0
 __kApInitProc		dd 0
 
 __APCounter				dd 0
+__ApSpinLock			dd 0
 				
 _kernelDllEntryFz		db '__kernelEntry',0
 _kTaskScheduleFz		db '__kTaskSchedule',0

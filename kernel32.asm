@@ -383,13 +383,22 @@ mov edi,0
 
 mov ebx,kernelData
 shl ebx,4
+
+__rm32WaitApSpinLock:
+lock bts dword ptr ds:[ebx + __ApSpinLock],0
+
+jc __rm32WaitApSpinLock
+
 lock inc dword ptr ds:[ebx+__APCounter]
 mov  eax,ds:[ebx+__APCounter]
 mov ecx,KTASK_STACK_SIZE
 mul ecx
 add eax,AP_KSTACK_BASE
+sub eax,STACK_TOP_DUMMY
 mov esp,eax
 mov ebp,esp
+
+lock btr dword ptr ds:[ebx + __ApSpinLock],0
 
 mov eax,ds:[ebx + __kApInitProc]
 call eax
