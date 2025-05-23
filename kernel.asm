@@ -245,7 +245,7 @@ __initAP16 proc
 
 __initAP16 endp
 
-__initAP16Size equ $ - __initAP16 + 100h
+__initAP16Size equ $ - __initAP16 + 10h
 
 
 
@@ -444,6 +444,9 @@ call __sectorReader
 add esp,10
 
 _readVsDllMain:
+
+jmp _readVsDllFont
+
 mov ebx,VSMAINDLL_LOAD_SEG
 mov edi,ds:[esi + DATALOADERSECTOR._maindllSecOff]
 movzx ecx,ds:[esi + DATALOADERSECTOR._maindllSecCnt]
