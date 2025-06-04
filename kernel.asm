@@ -445,7 +445,7 @@ add esp,10
 
 _readVsDllMain:
 
-jmp _readVsDllFont
+;jmp _readVsDllFont
 
 mov ebx,VSMAINDLL_LOAD_SEG
 mov edi,ds:[esi + DATALOADERSECTOR._maindllSecOff]
