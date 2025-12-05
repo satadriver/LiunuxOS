@@ -390,7 +390,15 @@ lock bts dword ptr ds:[ebx + __ApSpinLock],0
 jc __rm32WaitApSpinLock
 
 lock inc dword ptr ds:[ebx+__APCounter]
-mov  eax,ds:[ebx+__APCounter]
+;mov  eax,ds:[ebx+__APCounter]
+
+mov eax,0ffh
+or eax,100h
+mov ds:[LOCAL_APIC_BASE+0f0h],eax
+
+mov dword ptr eax,ds:[LOCAL_APIC_BASE+20h]
+shr eax,24
+inc eax
 mov ecx,KTASK_STACK_SIZE
 mul ecx
 add eax,AP_KSTACK_BASE
