@@ -26,7 +26,16 @@ mov edx,0
 mov ebx,0
 mov esi,0
 mov edi,0
-mov esp,KERNEL_TASK_STACK_TOP
+
+mov dword ptr eax,ds:[LOCAL_APIC_BASE+20h]
+shr eax,24
+inc eax
+mov ecx,KTASK_STACK_SIZE
+mul ecx
+add eax,AP_KSTACK_BASE
+sub eax,STACK_TOP_DUMMY
+mov esp,eax
+;mov esp,KERNEL_TASK_STACK_TOP
 mov ebp,esp
 
 mov ebx,kernelData
