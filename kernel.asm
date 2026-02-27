@@ -21,7 +21,7 @@ include kcall.asm
 
 KERNEL_BASE_SEGMENT EQU 1000H
 
-;cpu进入32位后必须执行32位代码,16位实模式或者保护模式必须执行16位代码?
+
 KERNEL16 SEGMENT para public use16
 assume cs:KERNEL16,ss:KERNELdata
 start:
@@ -53,8 +53,76 @@ shl eax,16
 mov ax,sp
 ;mov dword ptr ds:[_realModeStack],eax
 
+push ds
+push es
+mov eax,Kernel32
+mov ds,ax
+shl eax,4
+add eax,offset __kernel32Entry
+mov dword ptr ds:[__kernel32EntryOffset],eax
+
+mov eax,Kernel32
+mov ds,ax
+shl eax,4
+add eax,offset __ap32Entry
+mov dword ptr ds:[__ap32EntryOffset],eax
+
+mov eax,Kernel32
+mov ds,ax
+shl eax,4
+add eax,offset __first32Entry
+mov dword ptr ds:[__first32EntryOffset],eax
+
+mov ax,kernel16
+mov ds,ax
+mov esi,offset __initAP16
+mov eax,AP_INIT_SEG
+mov es,ax
+mov edi,AP_INIT_OFFSET
+mov ecx,__initAP16Size
+cld 
+rep movsb
+pop es
+pop ds
+
+call __enableA20
+
+call __initGDT
+
+lgdt fword ptr ds:[gdtReg]
+
 push word ptr 0ch
-push offset _kernel16Start
+push offset _strKernel16Start
+push cs
+call __textModeShow16
+add esp,6
+
+mov eax,0
+;mov cr4,eax
+db 0fh,22h,0e0h
+
+mov eax,cr0
+or al,1
+mov cr0,eax
+
+db 0eah
+dw __first32Stub
+dw reCode32TempSeg
+
+__kernel16_second_entry:
+mov esp,BIT16_STACK_TOP
+mov ebp,esp
+
+mov ax,KERNELData
+mov ds,ax
+mov es,ax
+
+;ss如果被设置为KERNELData,esp设置为0xfff0可能导致溢出
+mov ax,KERNEL_BASE_SEGMENT
+mov ss,ax
+
+push word ptr 0ch
+push offset _strKernel16LoadFiles
 push cs
 call __textModeShow16
 add esp,6
@@ -65,12 +133,6 @@ call __getMemoryMap
 add esp,4
 
 call __loadAllFiles
-
-push word ptr 0ch
-push offset _kernel16LoadFiles
-push cs
-call __textModeShow16
-add esp,6
 
 push ds
 mov ax,0
@@ -101,36 +163,9 @@ jmp __setTextVideoEnd
 __setTextVideoEnd:
 ;call __initDevices
 
-call __initGDT
-
 ;call __initIDT
 
-push ds
-push es
-mov eax,Kernel32
-mov ds,ax
-shl eax,4
-add eax,offset __kernel32Entry
-mov dword ptr ds:[__kernel32EntryOffset],eax
-
-mov eax,Kernel32
-mov ds,ax
-shl eax,4
-add eax,offset __initAP32Entry
-mov dword ptr ds:[__initAP32EntryOffset],eax
-
-mov ax,kernel16
-mov ds,ax
-mov esi,offset __initAP16
-mov eax,AP_INIT_SEG
-mov es,ax
-mov edi,AP_INIT_OFFSET
-mov ecx,__initAP16Size
-cld 
-rep movsb
-
-pop es
-pop ds
+lgdt fword ptr ds:[gdtReg]
 
 ;开机后cr0默认为10h et=1 浮点处理器存在,且bit4不可写
 ;进入保护模式之前必须使cr4为0
@@ -141,10 +176,6 @@ db 0fh,22h,0e0h
 ;enable a20 line
 ;in al,0eeh
 
-call __enableA20
-
-cli
-
 mov eax,cr0
 or al,1
 mov cr0,eax
@@ -153,7 +184,7 @@ mov cr0,eax
 ;32位标识的段内偏移值：((kernel<<4) + __kernel32Entry)必然大于0x10000,因为kernel16本身加载地址在0x10000,
 ;16位跳转32位的时候段间跳转偏移用2个字节表示而不是4字节，这时2字节的长度会溢出无法正确表示32偏移，因此添加了32位段内跳转
 _pmTmp32Entry 			db 0eah
-_pmTmp32EntryOffset		dw __tmp32Entry
+_pmTmp32EntryOffset		dw __tmp32Stub
 _pmTmp32EntrySelector	dw reCode32TempSeg
 
 ;从32位保护模式返回到16位实模式的过程中,必须进入16位保护模式,使得影子寄存器的段寄存长度界限等字段符合16位的要求
@@ -218,6 +249,8 @@ __initAP16 proc
 	mov es,ax
 	mov fs,ax
 	mov gs,ax
+	
+	mov ax,KERNEL_BASE_SEGMENT
 	mov ss,ax
 
 	mov esp, BIT16_STACK_TOP
@@ -240,7 +273,7 @@ __initAP16 proc
 	mov cr0,eax
 
 	_pmInitAPEntry 			db 0eah
-	_pmInitAPEntryOffset	dw offset __initAP32
+	_pmInitAPEntryOffset	dw offset __ap32Stub
 	_pmInitAPEntrySelector	dw reCode32TempSeg
 
 __initAP16 endp
@@ -311,8 +344,6 @@ mov dword ptr ds:[gdtReg + 2],eax
 mov word ptr ds:[gdtReg ],gdtLimit
 
 ;sgdt fword ptr ds:[_rmGdtReg]
-
-lgdt fword ptr ds:[gdtReg]
 
 add sp,40h
 pop es
@@ -411,7 +442,11 @@ mov ds,ax
 ;dll和字体扇区信息在data头部，直接读取就行了，mbr恢复后找不到写入扇区信息
 mov esi,offset _kernelSectorInfo
 
-mov ebx,VSKDLL_LOAD_SEG
+mov ebp,KERNEL_DLL_SOURCE_BASE
+
+mov ax,VSKDLL_LOAD_SEG
+mov es,ax
+
 mov edi,ds:[esi + DATALOADERSECTOR._kdllSecOff]
 movzx ecx,ds:[esi + DATALOADERSECTOR._kdllSecCnt]
 shr ecx,7
@@ -420,34 +455,59 @@ jz _readVsDllModSectors
 
 _readVsDllBlockSectors:
 push ecx
+
 push word ptr VSKDLL_LOAD_OFFSET
-push bx
+push  word ptr VSKDLL_LOAD_SEG
 push word ptr 80h
 push edi
 call __sectorReader
 add esp,10
-add ebx,1000h
+
+mov ecx,10000h
+shr ecx,2
+mov edx,0
+__copyBlockData:
+mov eax,es:[edx]
+mov fs:[ebp],eax
+add edx,4
+add ebp,4
+loop __copyBlockData
+
 add edi,80h
 pop ecx
 loop _readVsDllBlockSectors
 
 _readVsDllModSectors:
+
+mov esi,offset _kernelSectorInfo
 movzx ecx,ds:[esi + DATALOADERSECTOR._kdllSecCnt]
 and ecx,7fh
 CMP ECX,0
 JZ _readVsDllMain
 push word ptr VSKDLL_LOAD_OFFSET
-push bx
+push  word ptr VSKDLL_LOAD_SEG
 push cx
 push edi
 call __sectorReader
 add esp,10
 
+mov ecx,10000h
+shr ecx,2
+mov edx,0
+__copyBlockData2:
+mov eax,es:[edx]
+mov fs:[ebp],eax
+add edx,4
+add ebp,4
+loop __copyBlockData2
+
 _readVsDllMain:
 
 ;jmp _readVsDllFont
+mov ebp,MAIN_DLL_SOURCE_BASE
 
-mov ebx,VSMAINDLL_LOAD_SEG
+mov eax,VSMAINDLL_LOAD_SEG
+mov es,ax
 mov edi,ds:[esi + DATALOADERSECTOR._maindllSecOff]
 movzx ecx,ds:[esi + DATALOADERSECTOR._maindllSecCnt]
 shr ecx,7
@@ -456,13 +516,25 @@ jz _readVsDllMainModSectors
 
 _readVsMainDllBlockSectors:
 push ecx
+
 push word ptr VSMAINDLL_LOAD_OFFSET
-push bx
+push word ptr VSMAINDLL_LOAD_SEG
+
 push word ptr 80h
 push edi
 call __sectorReader
 add esp,10
-add bx,1000h
+
+mov ecx,10000h
+shr ecx,2
+mov edx,0
+__copyBlockData3:
+mov eax,es:[edx]
+mov fs:[ebp],eax
+add edx,4
+add ebp,4
+loop __copyBlockData3
+
 add edi,80h
 pop ecx
 loop _readVsMainDllBlockSectors
@@ -473,11 +545,21 @@ and ecx,7fh
 CMP ECX,0
 JZ _readVsDllFont
 push word ptr VSMAINDLL_LOAD_OFFSET
-push bx
+push word ptr VSMAINDLL_LOAD_SEG
 push cx
 push edi
 call __sectorReader
 add esp,10
+
+mov ecx,10000h
+shr ecx,2
+mov edx,0
+__copyBlockData4:
+mov eax,es:[edx]
+mov fs:[ebp],eax
+add edx,4
+add ebp,4
+loop __copyBlockData4
 
 _readVsDllFont:
 push word ptr GRAPHFONT_LOAD_OFFSET
@@ -524,9 +606,9 @@ jmp __v86ProcEndLoop2
 __v86ProcEnd endp
 
 
-_kernel16Start db 'kernel start',0
+_strKernel16Start db 'kernel16 start',0
 
-_kernel16LoadFiles db 'kernel load files start',0
+_strKernel16LoadFiles db 'kernel16 load files start',0
 
 KERNEL16 ends
 

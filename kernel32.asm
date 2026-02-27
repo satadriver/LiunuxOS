@@ -108,7 +108,8 @@ _useKernelTextMode:
 ;jz _DllEntryEnd
 
 push dword ptr KERNEL_DLL_BASE
-push dword ptr VSKDLL_LOAD_ADDRESS
+;push dword ptr VSKDLL_LOAD_ADDRESS
+push dword ptr KERNEL_DLL_SOURCE_BASE
 call __vsDllLoader
 ;mov ds:[ebx + _dllLoadAddr],eax
 add esp,8
@@ -360,22 +361,74 @@ __kernel32Entry endp
 
 
 
-__tmp32Entry proc
+
+__first32Entry proc
+mov eax,0
+mov ecx,0
+mov edx,0
+mov ebx,0
+mov esi,0
+mov edi,0
+mov ax,rwData32Seg
+mov ds,ax
+mov es,ax
+mov fs,ax
+mov gs,ax
+mov ss,ax
+
+mov dword ptr eax,ds:[LOCAL_APIC_BASE+20h]
+shr eax,24
+inc eax
+mov ecx,KTASK_STACK_SIZE
+mul ecx
+add eax,AP_KSTACK_BASE
+sub eax,STACK_TOP_DUMMY
+mov esp,eax
+;mov esp,KERNEL_TASK_STACK_TOP
+mov ebp,esp
+
+push dword ptr 0ch
+lea eax,strPm32FirstEntry
+push eax
+call __textModeShow32
+add esp,8
+
+mov eax,cr0
+and eax,0fffffffeh
+mov cr0,eax
+
+db 0eah
+dd offset __kernel16_second_entry
+dw Kernel16
+
+strPm32FirstEntry db '32 mode first entry',0
+
+__first32Entry endp
+
+
+
+__first32Stub proc
+db 0eah
+__first32EntryOffset 		dd 0
+__first32EntrySelector		dw reCode32Seg
+__first32Stub endp
+
+__tmp32Stub proc
 db 0eah
 __kernel32EntryOffset 		dd 0
 __kernel32EntrySelector		dw reCode32Seg
-__tmp32Entry endp
+__tmp32Stub endp
 
 
-__initAP32 proc
+__ap32Stub proc
 db 0eah
-__initAP32EntryOffset 		dd 0
-__initAP32EntrySelector		dw reCode32Seg
-__initAP32 endp
+__ap32EntryOffset 		dd 0
+__ap32EntrySelector		dw reCode32Seg
+__ap32Stub endp
 
 
 
-__initAP32Entry proc
+__ap32Entry proc
 mov ax,rwData32Seg
 mov ds,ax
 mov es,ax
@@ -419,7 +472,7 @@ lock btr dword ptr ds:[ebx + __ApSpinLock],0
 mov eax,ds:[ebx + __kApInitProc]
 call eax
 
-__initAP32Entry endp
+__ap32Entry endp
 
 
 __kernel32Exit proc
