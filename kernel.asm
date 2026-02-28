@@ -44,7 +44,7 @@ mov es,ax
 mov fs,ax
 mov gs,ax
 
-;ss如果被设置为KERNELData,esp设置为0xfff0可能导致溢出
+;ss如果被设置为KernelData,esp设置为0xfff0可能导致溢出
 mov ax,KERNEL_BASE_SEGMENT
 mov ss,ax
 
@@ -153,13 +153,13 @@ mov ss,ax
 push word ptr 0ch
 push offset _strKernel16LoadFiles
 push cs
-;call __textModeShow16
+call __textModeShow16
 add esp,6
 
 call __loadAllFiles
 
-mov ax,KernelData
-mov gs,ax
+;mov ax,KernelData
+;mov gs,ax
 
 cmp ds:[text_mode_tag],1
 jz __toTextModeScreen
@@ -480,7 +480,7 @@ mov ds,ax
 ;dll和字体扇区信息在data头部，直接读取就行了，mbr恢复后找不到写入扇区信息
 mov esi,offset _kernelSectorInfo
 
-mov ebp,KERNEL_DLL_SOURCE_BASE
+mov ebx,KERNEL_DLL_SOURCE_BASE
 
 mov ax,VSKDLL_LOAD_SEG
 mov es,ax
@@ -506,9 +506,9 @@ shr ecx,2
 mov edx,0
 __copyBlockData:
 mov eax,es:[edx]
-mov gs:[ebp],eax
+mov gs:[ebx],eax
 add edx,4
-add ebp,4
+add ebx,4
 loop __copyBlockData
 
 add edi,80h
@@ -534,15 +534,15 @@ shr ecx,2
 mov edx,0
 __copyBlockData2:
 mov eax,es:[edx]
-mov gs:[ebp],eax
+mov gs:[ebx],eax
 add edx,4
-add ebp,4
+add ebx,4
 loop __copyBlockData2
 
 _readVsDllMain:
 
 ;jmp _readVsDllFont
-mov ebp,MAIN_DLL_SOURCE_BASE
+mov ebx,MAIN_DLL_SOURCE_BASE
 
 mov eax,VSMAINDLL_LOAD_SEG
 mov es,ax
@@ -567,9 +567,9 @@ shr ecx,2
 mov edx,0
 __copyBlockData3:
 mov eax,es:[edx]
-mov gs:[ebp],eax
+mov gs:[ebx],eax
 add edx,4
-add ebp,4
+add ebx,4
 loop __copyBlockData3
 
 add edi,80h
@@ -593,9 +593,9 @@ shr ecx,2
 mov edx,0
 __copyBlockData4:
 mov eax,es:[edx]
-mov gs:[ebp],eax
+mov gs:[ebx],eax
 add edx,4
-add ebp,4
+add ebx,4
 loop __copyBlockData4
 
 _readVsDllFont:
