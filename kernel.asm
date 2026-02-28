@@ -23,7 +23,7 @@ KERNEL_BASE_SEGMENT EQU 1000H
 
 
 KERNEL16 SEGMENT para public use16
-assume cs:KERNEL16,ss:KERNELdata
+assume cs:KERNEL16,ss:KernelData
 start:
 
 _kernel16Entry proc
@@ -38,7 +38,7 @@ mov edi,0
 mov esp,BIT16_STACK_TOP
 mov ebp,esp
 
-mov ax,KERNELData
+mov ax,KernelData
 mov ds,ax
 mov es,ax
 mov fs,ax
@@ -85,9 +85,29 @@ rep movsb
 pop es
 pop ds
 
+push ds
+mov ax,0
+mov ds,ax
+xor eax,eax
+mov ax,KERNEL16
+shl eax,16
+mov ax,offset __v86ProcEnd
+mov dword ptr ds:[20h*4],eax
+mov dword ptr ds:[21h*4],eax
+pop ds
+
+push word ptr MEMORYINFO_LOAD_OFFSET
+push word ptr MEMORYINFO_LOAD_SEG
+call __getMemoryMap
+add esp,4
+
 call __enableA20
 
 call __initGDT
+
+mov ax,KernelData
+mov ds,ax
+mov es,ax
 
 lgdt fword ptr ds:[gdtReg]
 
@@ -110,40 +130,36 @@ dw __first32Stub
 dw reCode32TempSeg
 
 __kernel16_second_entry:
+cli
+
+mov eax,0
+mov ecx,0
+mov edx,0
+mov ebx,0
+mov esi,0
+mov edi,0
 mov esp,BIT16_STACK_TOP
 mov ebp,esp
 
-mov ax,KERNELData
+mov ax,KernelData
 mov ds,ax
 mov es,ax
+mov fs,ax
 
-;ss如果被设置为KERNELData,esp设置为0xfff0可能导致溢出
+;ss如果被设置为 KernelData,esp设置为0xfff0可能导致溢出
 mov ax,KERNEL_BASE_SEGMENT
 mov ss,ax
 
 push word ptr 0ch
 push offset _strKernel16LoadFiles
 push cs
-call __textModeShow16
+;call __textModeShow16
 add esp,6
-
-push word ptr MEMORYINFO_LOAD_OFFSET
-push word ptr MEMORYINFO_LOAD_SEG
-call __getMemoryMap
-add esp,4
 
 call __loadAllFiles
 
-push ds
-mov ax,0
-mov ds,ax
-xor eax,eax
-mov ax,KERNEL16
-shl eax,16
-mov ax,offset __v86ProcEnd
-mov dword ptr ds:[20h*4],eax
-mov dword ptr ds:[21h*4],eax
-pop ds
+mov ax,KernelData
+mov gs,ax
 
 cmp ds:[text_mode_tag],1
 jz __toTextModeScreen
@@ -242,6 +258,28 @@ int 21h
 _kernel16Entry endp
 
 
+
+
+__pm16Entry proc
+
+mov ax,rwData16Seg
+mov ds,ax
+mov es,ax
+mov fs,ax
+mov ss,ax
+
+mov eax,cr0
+and eax,0fffffffeh
+mov cr0,eax
+
+db 0eah
+dw offset __kernel16_second_entry
+dw Kernel16
+
+__pm16Entry endp
+
+
+
 __initAP16 proc
 	cli
 	mov eax, kerneldata
@@ -317,7 +355,6 @@ mov word ptr ds:[callGateDescriptor +6],ax
 mov ax,reCode32Seg
 mov word ptr ds:[callGateDescriptor + 2],ax
 
-
 mov eax,Kernel16
 shl eax,4
 mov word ptr ds:[reCode16Descriptor+2],ax
@@ -326,9 +363,9 @@ mov byte ptr ds:[reCode16Descriptor +4],al
 
 mov eax,KernelData
 shl eax,4
-mov word ptr ds:[rwData16Descriptor+2],ax
+;mov word ptr ds:[rwData16Descriptor+2],ax
 shr eax,16
-mov byte ptr ds:[rwData16Descriptor +4],al
+;mov byte ptr ds:[rwData16Descriptor +4],al
 
 mov eax,Kernel32
 shl eax,4
@@ -426,6 +463,7 @@ __sectorReader endp
 
 
 __loadAllFiles proc
+
 push ebp
 mov ebp,esp
 push ecx
@@ -457,7 +495,7 @@ _readVsDllBlockSectors:
 push ecx
 
 push word ptr VSKDLL_LOAD_OFFSET
-push  word ptr VSKDLL_LOAD_SEG
+push word ptr VSKDLL_LOAD_SEG
 push word ptr 80h
 push edi
 call __sectorReader
@@ -468,7 +506,7 @@ shr ecx,2
 mov edx,0
 __copyBlockData:
 mov eax,es:[edx]
-mov fs:[ebp],eax
+mov gs:[ebp],eax
 add edx,4
 add ebp,4
 loop __copyBlockData
@@ -485,7 +523,7 @@ and ecx,7fh
 CMP ECX,0
 JZ _readVsDllMain
 push word ptr VSKDLL_LOAD_OFFSET
-push  word ptr VSKDLL_LOAD_SEG
+push word ptr VSKDLL_LOAD_SEG
 push cx
 push edi
 call __sectorReader
@@ -496,7 +534,7 @@ shr ecx,2
 mov edx,0
 __copyBlockData2:
 mov eax,es:[edx]
-mov fs:[ebp],eax
+mov gs:[ebp],eax
 add edx,4
 add ebp,4
 loop __copyBlockData2
@@ -519,7 +557,6 @@ push ecx
 
 push word ptr VSMAINDLL_LOAD_OFFSET
 push word ptr VSMAINDLL_LOAD_SEG
-
 push word ptr 80h
 push edi
 call __sectorReader
@@ -530,7 +567,7 @@ shr ecx,2
 mov edx,0
 __copyBlockData3:
 mov eax,es:[edx]
-mov fs:[ebp],eax
+mov gs:[ebp],eax
 add edx,4
 add ebp,4
 loop __copyBlockData3
@@ -556,7 +593,7 @@ shr ecx,2
 mov edx,0
 __copyBlockData4:
 mov eax,es:[edx]
-mov fs:[ebp],eax
+mov gs:[ebp],eax
 add edx,4
 add ebp,4
 loop __copyBlockData4

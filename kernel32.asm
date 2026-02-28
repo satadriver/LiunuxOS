@@ -363,6 +363,7 @@ __kernel32Entry endp
 
 
 __first32Entry proc
+
 mov eax,0
 mov ecx,0
 mov edx,0
@@ -390,16 +391,12 @@ mov ebp,esp
 push dword ptr 0ch
 lea eax,strPm32FirstEntry
 push eax
-call __textModeShow32
+;call __textModeShow32
 add esp,8
 
-mov eax,cr0
-and eax,0fffffffeh
-mov cr0,eax
-
 db 0eah
-dd offset __kernel16_second_entry
-dw Kernel16
+dd offset __pm16Entry
+dw reCode16Seg
 
 strPm32FirstEntry db '32 mode first entry',0
 
@@ -408,6 +405,7 @@ __first32Entry endp
 
 
 __first32Stub proc
+
 db 0eah
 __first32EntryOffset 		dd 0
 __first32EntrySelector		dw reCode32Seg

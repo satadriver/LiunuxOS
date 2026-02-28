@@ -180,7 +180,7 @@ SYSTEM_TIMER0_FACTOR		EQU 11932
 
 
 
-kernelData segment para use32
+KernelData segment para use32
 _kernelSectorInfo			DATALOADERSECTOR <0>
 
 align 10h
@@ -485,4 +485,4 @@ ScanCodesBuf 		db  0 ,1bh,'1','2','3','4','5','6','7','8','9','0','-','=', 8,  9
 ScanCodesTransBuf  	db  0, 1bh,'!','@','#','$','%','^','&','*','(',')','_','+', 8,  9, 		'Q','W','E','R','T','Y','U','I','O','P','{','}',0ah, 0, 'A','S'
 					db 'D','F','G','H','J','K','L',':','"','~', 0, '|','Z','X','C','V',		'B','N','M','<','>','?', 0, '*', 0, ' ', 0,  0,  0,  0,  0,  0
 					db  0,  0,  0,  0,  0,  0,  0, '7','8','9','-','4','5','6','+','1',		'2','3','0','.', 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0
-kernelData ends
+KernelData ends
