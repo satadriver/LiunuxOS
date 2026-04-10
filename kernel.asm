@@ -172,7 +172,7 @@ jmp __setTextVideoEnd
 
 __toTextModeScreen:
 mov ax,4f02h
-mov bx,4003h
+mov bx,003h
 int 10h
 jmp __setTextVideoEnd
 
@@ -629,7 +629,7 @@ mov es,ax
 mov ax,4f02h
 xor ebx,ebx
 mov bx,ds:[_videoMode]
-or bx,0c000h
+or bx,04000h
 int 10h
 
 sti

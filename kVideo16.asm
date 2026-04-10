@@ -321,7 +321,7 @@ __initVesa proc
 	
 	_initVesaError:
 	mov ax,4f02h
-	mov bx,3
+	mov bx,003h
 	int 10h
 	
 	mov ax,[esp]
