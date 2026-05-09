@@ -746,6 +746,9 @@ _ToVideoTextMode:
 	mov dword ptr ds:[text_mode_tag],1
 	jmp __initVideoOver
 	
+	_ToOringinOs:
+	call __loadOriginMbr
+	
 __checkVideoMode:
 	mov bx,sp
 	;add bx,200h
@@ -843,8 +846,11 @@ __checkVideoMode:
 __initVideo_getmode:
 	mov ah,0
 	int 16h
-	cmp al,1bh
+	cmp al,'t'
 	jz _ToVideoTextMode
+	
+	cmp al,1bh
+	jz _ToOringinOs
 	
 	sub al,30h
 	cmp al,0

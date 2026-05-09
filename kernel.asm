@@ -462,6 +462,39 @@ __sectorReader endp
 
 
 
+__loadOriginMbr proc
+pushad
+push ds
+push es
+push fs
+push gs
+
+mov ax,kerneldata
+mov ds,ax
+
+mov esi,offset _kernelSectorInfo
+mov edi,ds:[esi + DATALOADERSECTOR._bakMbrSecOff]
+
+push word ptr 7c00h
+push word ptr 0
+push word ptr 1
+push edi
+call __sectorReader
+add esp,10
+
+;jmp far ptr 0:7c00h
+db 0eah
+dw 7c00h
+dw 0
+
+pop gs
+pop fs
+pop es
+pop ds
+popad
+ret
+__loadOriginMbr endp
+
 __loadAllFiles proc
 
 push ebp
