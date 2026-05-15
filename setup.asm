@@ -6,10 +6,10 @@ NEWMBR_BUFFER_SEG 	EQU 6200H
 FLAG_SECTOR_SEG		EQU 6400H
 FONT_SECTOR_SEG		EQU 6600H
 
-LOADER_BUFFER_SEG 	EQU 800H
-KERNEL_BUFFER_SEG	EQU 1000H
+LOADER_BUFFER_SEG 	EQU 8000H
+KERNEL_BUFFER_SEG	EQU 6000H
 
-SETUP_SECTOR_LIMIT	EQU 1000H
+SETUP_SECTOR_LIMIT	EQU 0ffffffffH
 INSTALL_FLAG		EQU 00474a4ch
 
 BAKMBR_SECTOR_OFFSET	EQU 1
@@ -28,7 +28,7 @@ assume cs:code
 start:
 
 ;find empty sectors,fat12 or fat16,fat32
-mov dword ptr cs:[freesecno],6
+mov dword ptr cs:[freesecno],200000h
 _readnextsec:
 inc dword ptr cs:[freesecno]
 cmp dword ptr cs:[freesecno],SETUP_SECTOR_LIMIT
@@ -64,13 +64,13 @@ jmp _findOK
 
 _checkbytes:
 cld
-mov ecx,8000h
+mov ecx,4000h
 mov esi,0
 mov ax,KERNEL_BUFFER_SEG
 mov ds,ax
 _checkzero:
-lodsw
-cmp ax,0
+lodsd
+cmp eax,0
 jnz _readnextsec
 loop _checkzero
 
